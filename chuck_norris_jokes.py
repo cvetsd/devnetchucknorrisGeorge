@@ -27,9 +27,12 @@ def lineno():
     """Returns the current line number in our program."""
     return inspect.currentframe().f_back.f_lineno
 
-def get_chuck_norris_joke():
+def get_chuck_norris_joke(myCat = False):
     
-    URL = f'https://api.chucknorris.io/jokes/random'
+    if myCat:
+        URL = f'https://api.chucknorris.io/jokes/random?category={myCat}'
+    else:
+        URL = f'https://api.chucknorris.io/jokes/random'
 
     mysession = requests.session()
     try:
@@ -63,8 +66,13 @@ def get_chuck_norris_cats():
 
     mylogger(f"{lineno()} Response json.dumps: {json.dumps(response.json(), indent=4, separators=(',', ': '))}")
     mylogger(f'{lineno()} Response text: {response.text}')
-    if 'value' in response.json():
-        return response.json()['value']
+    if response.ok:
+        cleanCats = response.text
+        cleanCats = cleanCats.replace('[','')
+        cleanCats = cleanCats.replace(']','')
+        cleanCats = cleanCats.replace(',','\n')
+        cleanCats = cleanCats.replace('"','')
+        return cleanCats
     else:
         return False
 
@@ -74,6 +82,40 @@ def main():
         print(myGetJoke)
     else:
         print("Couldn't get a joke")
+    
+    while True:
+        print ('1. Get another joke')
+        print ('2. List joke categories')
+        print ('3. Specify joke category')
+        print ('4. Exit')
+        myOption = input(f'Please enter number 1 - 4: ')
+        if myOption == '1':
+            myGetJoke = get_chuck_norris_joke()
+            if myGetJoke:
+                print(myGetJoke)
+            else:
+                print("Couldn't get a joke")
+        elif myOption == '2':
+            myJokeCategories = get_chuck_norris_cats()
+            if myJokeCategories:
+                os.system('clear')
+                print(myJokeCategories)
+            else:
+                print("Couldn't get categories")
+        elif myOption == '3':
+            userCat = input(f'Enter category: ')
+            if len(userCat) > 2:
+                myGetJoke = get_chuck_norris_joke(userCat)
+                if myGetJoke:
+                    print(myGetJoke)
+                else:
+                    print("Couldn't get a joke")
+        elif myOption.lower() in ['4','q','x']:
+            break
+        else:
+            os.system('clear')
+
+
 
 if __name__ == '__main__':
     try:
