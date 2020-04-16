@@ -38,7 +38,6 @@ def get_chuck_norris_joke():
             mylogger(f'{lineno()} Got joke. response: {response}')
         else:
             mylogger(f'{lineno()} Failed getting joke. response: {response}')
-        #print(f'url:{response.url}')
     except Exception as e:
         mylogger(f'{lineno()} Caught the exception: {e}')
 
@@ -48,9 +47,28 @@ def get_chuck_norris_joke():
         return response.json()['value']
     else:
         return False
-    
+
+def get_chuck_norris_cats():
+    URL = f'https://api.chucknorris.io/jokes/categories'
+
+    mysession = requests.session()
+    try:
+        response = mysession.get(URL)
+        if response.ok:
+            mylogger(f'{lineno()} Got categories. response: {response}')
+        else:
+            mylogger(f'{lineno()} Failed getting categories. response: {response}')
+    except Exception as e:
+        mylogger(f'{lineno()} Caught the exception: {e}')
+
+    mylogger(f"{lineno()} Response json.dumps: {json.dumps(response.json(), indent=4, separators=(',', ': '))}")
+    mylogger(f'{lineno()} Response text: {response.text}')
+    if 'value' in response.json():
+        return response.json()['value']
+    else:
+        return False
+
 def main():
-    #Get access token to access API
     myGetJoke = get_chuck_norris_joke()
     if myGetJoke:
         print(myGetJoke)
